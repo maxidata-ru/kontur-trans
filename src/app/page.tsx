@@ -50,6 +50,8 @@ import {
   Truck,
   Users,
   Menu,
+  Moon,
+  Sun,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -275,7 +277,7 @@ function MobileCards({
 
 // ---------- Страница ----------
 export default function Page() {
-    const initialRows: RowItem[] = React.useMemo(() => {
+  const initialRows: RowItem[] = React.useMemo(() => {
     return (tableData as RawTableItem[]).map((r) => ({
         id: String(r["№"]),
         num: r["№"],
@@ -383,6 +385,18 @@ export default function Page() {
   const dailyData = chartData as ChartPoint[];
   const weeklyData = React.useMemo(() => aggregateByISOWeeks(dailyData), [dailyData]);
 
+  // Состояние для темы
+  const [isDark, setIsDark] = React.useState(false);
+
+  // Переключение темы
+  React.useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDark]);
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
       <div className="flex w-full flex-1">
@@ -391,6 +405,14 @@ export default function Page() {
           <div className="flex h-14 items-center gap-2 px-4">
             <Truck className="h-5 w-5" aria-label="Логотип" />
             <span className="font-semibold">Контур•Транс</span>
+            {/* Кнопка переключения темы */}
+            <button
+              className="ml-auto rounded p-2 hover:bg-muted transition"
+              aria-label={isDark ? "Светлая тема" : "Темная тема"}
+              onClick={() => setIsDark((v) => !v)}
+            >
+              {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            </button>
           </div>
           <Separator />
           <nav className="px-3 py-2">
