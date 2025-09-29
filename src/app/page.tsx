@@ -338,7 +338,7 @@ export default function Page() {
     <div className="flex min-h-screen w-full flex-col bg-background">
       <div className="flex w-full flex-1">
         {/* Sidebar */}
-        <aside className="hidden w-64 shrink-0 border-r bg-muted/30 md:block">
+        <aside className="hidden w-64 shrink-0 border-r bg-muted/30 md:block sticky top-0 h-screen">
           <div className="flex h-14 items-center gap-2 px-4">
             <Truck className="h-5 w-5" aria-label="Логотип" />
             <span className="font-semibold">Контур•Транс</span>
@@ -601,8 +601,22 @@ export default function Page() {
                     <YAxis allowDecimals={false} />
                     <Tooltip />
                     <Legend />
-                    <Area type="monotone" dataKey="Рефрижератор" stackId="1" fillOpacity={0.4} />
-                    <Area type="monotone" dataKey="Фургон" stackId="1" fillOpacity={0.4} />
+                    <Area
+                      type="monotone"
+                      dataKey="Рефрижератор"
+                      stackId="1"
+                      fill="#2D5CF3"
+                      stroke="#2D5CF3"
+                      fillOpacity={0.4}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="Фургон"
+                      stackId="1"
+                      fill="#E25606"
+                      stroke="#E25606"
+                      fillOpacity={0.4}
+                    />
                   </AreaChart>
                 </ResponsiveContainer>
               </CardContent>
