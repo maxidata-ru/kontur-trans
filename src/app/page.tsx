@@ -224,6 +224,55 @@ function SortableRow({
   );
 }
 
+function MobileCards({
+  items,
+  onOpen,
+}: {
+  items: RowItem[];
+  onOpen: (row: RowItem) => void;
+}) {
+  return (
+    <div className="space-y-3 md:hidden">
+      {items.map((r) => (
+        <Card
+          key={r.id}
+          role="button"
+          onClick={() => onOpen(r)}
+          className="hover:bg-muted/50"
+          aria-label={`Открыть документ №${r.num}`}
+        >
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between gap-2">
+              <div className="font-medium">
+                №{r.num} • {formatDateRU(r.date)}
+              </div>
+              {statusBadge(r.statusKey)}
+            </div>
+
+            <Separator className="my-3" />
+
+            <div className="grid grid-cols-1 gap-2 text-sm">
+              <div>
+                <span className="text-muted-foreground">Грузоотправитель: </span>
+                {r.shipper}
+              </div>
+              <div>
+                <span className="text-muted-foreground">Грузополучатель: </span>
+                {r.consignee}
+              </div>
+              <div>
+                <span className="text-muted-foreground">Тип транспорта: </span>
+                {r.transportType}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+
 // ---------- Страница ----------
 export default function Page() {
     const initialRows: RowItem[] = React.useMemo(() => {
@@ -490,53 +539,63 @@ export default function Page() {
                 <CardTitle>Список документов</CardTitle>
               </CardHeader>
               <CardContent>
-                <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-                  <Table>
-                    <TableHeader>
-                      {table.getHeaderGroups().map((hg) => (
-                        <TableRow key={hg.id}>
-                          {hg.headers.map((h) => (
-                            <TableHead key={h.id} className={h.column.id === "drag" ? "w-10" : ""}>
-                              {h.isPlaceholder
-                                ? null
-                                : flexRender(h.column.columnDef.header, h.getContext())}
-                            </TableHead>
-                          ))}
-                        </TableRow>
-                      ))}
-                    </TableHeader>
-                    <TableBody>
-                      <SortableContext items={pageItems.map((r) => r.id)} strategy={verticalListSortingStrategy}>
-                        {table.getRowModel().rows.length ? (
-                          table.getRowModel().rows.map((r) => (
-                            <SortableRow
-                              key={r.original.id}
-                              id={r.original.id}
-                              onClick={() => {
-                                setActiveRow(r.original);
-                                setOpenSheet(true);
-                              }}
-                            >
-                              {r.getVisibleCells().map((cell) =>
-                                cell.column.id === "drag" ? null : (
-                                  <TableCell key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                  </TableCell>
-                                )
-                              )}
-                            </SortableRow>
-                          ))
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={columns.length} className="h-24 text-center">
-                              Нет данных
-                            </TableCell>
+                {/* Мобилка: карточки */}
+                <MobileCards
+                  items={pageItems}
+                  onOpen={(row) => {
+                    setActiveRow(row);
+                    setOpenSheet(true);
+                  }}
+                />
+
+                {/* Десктоп/планшет: таблица */}
+                <div className="hidden md:block">
+                  <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+                    <Table>
+                      <TableHeader>
+                        {table.getHeaderGroups().map((hg) => (
+                          <TableRow key={hg.id}>
+                            {hg.headers.map((h) => (
+                              <TableHead key={h.id} className={h.column.id === "drag" ? "w-10" : ""}>
+                                {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
+                              </TableHead>
+                            ))}
                           </TableRow>
-                        )}
-                      </SortableContext>
-                    </TableBody>
-                  </Table>
-                </DndContext>
+                        ))}
+                      </TableHeader>
+                      <TableBody>
+                        <SortableContext items={pageItems.map((r) => r.id)} strategy={verticalListSortingStrategy}>
+                          {table.getRowModel().rows.length ? (
+                            table.getRowModel().rows.map((r) => (
+                              <SortableRow
+                                key={r.original.id}
+                                id={r.original.id}
+                                onClick={() => {
+                                  setActiveRow(r.original);
+                                  setOpenSheet(true);
+                                }}
+                              >
+                                {r.getVisibleCells().map((cell) =>
+                                  cell.column.id === "drag" ? null : (
+                                    <TableCell key={cell.id}>
+                                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </TableCell>
+                                  )
+                                )}
+                              </SortableRow>
+                            ))
+                          ) : (
+                            <TableRow>
+                              <TableCell colSpan={columns.length} className="h-24 text-center">
+                                Нет данных
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </SortableContext>
+                      </TableBody>
+                    </Table>
+                  </DndContext>
+                </div>
 
                 {/* Пагинация */}
                 <div className="mt-4 flex items-center justify-between">
@@ -583,7 +642,7 @@ export default function Page() {
                   </ToggleGroupItem>
                 </ToggleGroup>
               </CardHeader>
-              <CardContent className="h-80">
+              <CardContent className="h-80 touch-pan-y md:touch-auto">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart
                     data={
