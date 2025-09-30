@@ -447,7 +447,10 @@ export default function Page() {
 
         {/* Main */}
         <main className="flex-1">
-            <div className="flex h-14 items-center gap-4 border-b px-4">
+            {/* 1. Зафиксированный top bar для мобильного */}
+            <div
+              className="flex h-14 items-center gap-4 border-b px-4 sticky top-0 z-30 bg-background md:static md:z-auto"
+            >
             {/* Мобильная кнопка-меню */}
             <Sheet>
                 <SheetTrigger asChild>
@@ -464,14 +467,7 @@ export default function Page() {
                 <div className="flex h-14 items-center gap-2 px-4">
                     <Truck className="h-5 w-5" aria-label="Логотип" />
                     <span className="font-semibold">Контур•Транс</span>
-                    {/* Кнопка переключения темы в мобильном меню */}
-                    <button
-                      className="ml-auto rounded p-2 hover:bg-muted transition"
-                      aria-label={isDark ? "Светлая тема" : "Темная тема"}
-                      onClick={() => setIsDark((v) => !v)}
-                    >
-                      {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-                    </button>
+                    {/* 3. УБРАНО: Кнопка переключения темы в мобильном меню */}
                 </div>
                 <Separator />
                 <nav className="px-3 py-2">
@@ -511,9 +507,9 @@ export default function Page() {
                 <span className="font-semibold">Контур•Транс</span>
             </div>
 
-            {/* Кнопка переключения темы для мобильной шапки */}
+            {/* 2. Иконка луны прижата к правому краю с отступом */}
             <button
-              className="ml-auto rounded p-2 hover:bg-muted transition md:hidden"
+              className="ml-auto mr-2 rounded p-2 hover:bg-muted transition md:hidden"
               aria-label={isDark ? "Светлая тема" : "Темная тема"}
               onClick={() => setIsDark((v) => !v)}
             >
@@ -522,9 +518,7 @@ export default function Page() {
 
             <div className="ml-auto flex items-center gap-2" />
             </div>
-
-
-
+            
           <div className="p-4">
             {/* Фильтры */}
             <Card className="mb-4">
